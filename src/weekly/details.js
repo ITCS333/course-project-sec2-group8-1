@@ -105,7 +105,7 @@ function renderComments() {
 
 async function handleAddComment(event) {
   event.preventDefault();
-  if (!newCommentInput || !currentWeekId) {
+  if (!newCommentInput) {
     return;
   }
 
