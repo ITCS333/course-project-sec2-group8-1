@@ -153,7 +153,10 @@ async function handleUpdateWeek(id, fields) {
 
 async function handleTableClick(event) {
   const target = event.target;
-  if (!(target instanceof HTMLElement)) {
+  // Avoid using `instanceof HTMLElement` because the test VM may not
+  // expose the global `HTMLElement` constructor. Instead, check for
+  // expected DOM properties (classList) to identify element-like objects.
+  if (!target || typeof target.classList === "undefined") {
     return;
   }
 
