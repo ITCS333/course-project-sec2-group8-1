@@ -55,45 +55,43 @@
  *   Success: { "success": true,  "data": ... }
  *   Error:   { "success": false, "message": "..." }
  */
-
 // ============================================================================
 // HEADERS AND INITIALIZATION
 // ============================================================================
 
-// TODO: Set headers for JSON response and CORS.
-// Set Content-Type to application/json.
-// Allow cross-origin requests (CORS) if needed.
-// Allow HTTP methods: GET, POST, PUT, DELETE, OPTIONS.
-// Allow headers: Content-Type, Authorization.
+header('Content-Type: application/json; charset=utf-8');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
 
-// TODO: Handle preflight OPTIONS request.
-// If the request method is OPTIONS, return HTTP 200 and exit.
+// Include local db shim if present (tests provide one), otherwise shared connector
+if (file_exists(__DIR__ . '/db.php')) {
+    require_once __DIR__ . '/db.php';
+} else {
+    require_once __DIR__ . '/../../common/db.php';
+}
 
+$db = getDBConnection();
+$method = $_SERVER['REQUEST_METHOD'];
+$rawData = file_get_contents('php://input');
+$data = json_decode($rawData, true) ?? [];
 
-// TODO: Include the shared database connection file.
-// require_once __DIR__ . '/../../common/db.php';
+$action    = $_GET['action']     ?? null;
+$id        = $_GET['id']         ?? null;
+$weekId    = $_GET['week_id']    ?? null;
+$commentId = $_GET['comment_id'] ?? null;
 
-
-// TODO: Get the PDO database connection.
-// $db = getDBConnection();
-
-
-// TODO: Read the HTTP request method.
-// $method = $_SERVER['REQUEST_METHOD'];
-
-
-// TODO: Read and decode the request body for POST and PUT requests.
-// $rawData = file_get_contents('php://input');
-// $data    = json_decode($rawData, true) ?? [];
-
-
-// TODO: Read query parameters.
-// $action    = $_GET['action']     ?? null;  // 'comments', 'comment', 'delete_comment'
-// $id        = $_GET['id']         ?? null;  // integer week id
-// $weekId    = $_GET['week_id']    ?? null;  // integer week id for comments queries
-// $commentId = $_GET['comment_id'] ?? null;  // integer comment id
-
+function sendResponse(array $payload, int $status = 200): void
+{
+    http_response_code($status);
+    echo json_encode($payload);
+    exit;
+}
 
 // ============================================================================
 // WEEKS FUNCTIONS
