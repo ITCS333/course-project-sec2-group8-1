@@ -7,11 +7,11 @@ let users = [
 let listenersAttached = false;
 
 // --- Element Selections ---
-const userTableBody       = document.getElementById('user-table-body');
-const addUserForm          = document.getElementById('add-user-form');
-const changePasswordForm  = document.getElementById('password-form');
-const searchInput          = document.getElementById('search-input');
-const tableHeaders        = document.querySelectorAll('#user-table thead th');
+const userTableBody      = document.getElementById('user-table-body');
+const addUserForm        = document.getElementById('add-user-form');
+const changePasswordForm = document.getElementById('password-form');
+const searchInput        = document.getElementById('search-input');
+const tableHeaders       = document.querySelectorAll('#user-table thead th');
 
 // --- Functions ---
 
@@ -56,6 +56,7 @@ function createUserRow(user) {
 
 function renderTable(userArray) {
   userTableBody.innerHTML = '';
+
   userArray.forEach(user => {
     userTableBody.appendChild(createUserRow(user));
   });
@@ -81,22 +82,34 @@ function handleChangePassword(event) {
     alert('Passwords do not match.');
     return;
   }
+
   if (newPassword.length < 8) {
     alert('Password must be at least 8 characters.');
     return;
   }
 
-  // تفريغ الحقول هنا فوراً لاجتياز اختبار الفحص المتزامن المباشر [JS-13]
+  // Clear fields immediately
   currentPasswordInput.value = '';
   newPasswordInput.value     = '';
   confirmPasswordInput.value = '';
 
   let id = 1;
+
   try {
-    if (typeof window !== 'undefined' && 'sessionStorage' in window && window.sessionStorage) {
+    if (
+      typeof window !== 'undefined' &&
+      'sessionStorage' in window &&
+      window.sessionStorage
+    ) {
       id = window.sessionStorage.getItem('user_id') || id;
     }
-    if (id === 1 && typeof window !== 'undefined' && 'localStorage' in window && window.localStorage) {
+
+    if (
+      id === 1 &&
+      typeof window !== 'undefined' &&
+      'localStorage' in window &&
+      window.localStorage
+    ) {
       id = window.localStorage.getItem('user_id') || id;
     }
   } catch (e) {
@@ -120,7 +133,9 @@ function handleChangePassword(event) {
         alert(data.message || 'Failed to update password.');
       }
     })
-    .catch(() => alert('Network error. Please try again.'));
+    .catch(() => {
+      alert('Network error. Please try again.');
+    });
 }
 
 /**
@@ -140,6 +155,7 @@ function handleAddUser(event) {
     alert('Please fill out all required fields.');
     return;
   }
+
   if (password.length < 8) {
     alert('Password must be at least 8 characters.');
     return;
@@ -148,38 +164,51 @@ function handleAddUser(event) {
   fetch('../api/index.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, email, password, is_admin })
+    body: JSON.stringify({
+      name,
+      email,
+      password,
+      is_admin
+    })
   })
     .then(res => {
       if (res.status === 201) {
         return res.json().then(data => ({ ok: true, data }));
       }
+
       return res.json().then(data => ({ ok: false, data }));
     })
     .then(({ ok, data }) => {
       if (ok) {
         addUserForm.reset();
-        loadUsersAndInitialize(); 
+        loadUsersAndInitialize();
       } else {
         alert(data.message || 'Failed to add user.');
       }
     })
-    .catch(() => alert('Network error. Please try again.'));
+    .catch(() => {
+      alert('Network error. Please try again.');
+    });
 }
 
 /**
  * handleTableClick
- * Event-delegated handler for Edit and Delete buttons inside the table body.
+ * Event-delegated handler for Edit and Delete buttons.
  */
 function handleTableClick(event) {
   const target = event.target;
 
-  // ── DELETE ──
+  // DELETE
   if (target.classList.contains('delete-btn')) {
     const id = target.dataset.id;
-    if (!confirm('Are you sure you want to delete this user?')) return;
 
-    fetch('../api/index.php?id=' + id, { method: 'DELETE' })
+    if (!confirm('Are you sure you want to delete this user?')) {
+      return;
+    }
+
+    fetch('../api/index.php?id=' + id, {
+      method: 'DELETE'
+    })
       .then(res => res.json())
       .then(data => {
         if (data.success) {
@@ -189,20 +218,32 @@ function handleTableClick(event) {
           alert(data.message || 'Failed to delete user.');
         }
       })
-      .catch(() => alert('Network error. Please try again.'));
+      .catch(() => {
+        alert('Network error. Please try again.');
+      });
   }
 
-  // ── EDIT ──
+  // EDIT
   if (target.classList.contains('edit-btn')) {
-    const id   = target.dataset.id;
-    const user = users.find(u => String(u.id) === String(id));
+    const id = target.dataset.id;
+
+    const user = users.find(
+      u => String(u.id) === String(id)
+    );
+
     if (!user) return;
 
-    const newName    = prompt('Edit name:', user.name);
-    if (newName === null) return; 
-    const newEmail   = prompt('Edit email:', user.email);
+    const newName = prompt('Edit name:', user.name);
+    if (newName === null) return;
+
+    const newEmail = prompt('Edit email:', user.email);
     if (newEmail === null) return;
-    const adminInput = prompt('Is admin? (1 = Yes, 0 = No):', user.is_admin);
+
+    const adminInput = prompt(
+      'Is admin? (1 = Yes, 0 = No):',
+      user.is_admin
+    );
+
     if (adminInput === null) return;
 
     fetch('../api/index.php', {
@@ -218,7 +259,10 @@ function handleTableClick(event) {
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          const idx = users.findIndex(u => String(u.id) === String(id));
+          const idx = users.findIndex(
+            u => String(u.id) === String(id)
+          );
+
           if (idx !== -1) {
             users[idx] = {
               ...users[idx],
@@ -227,20 +271,23 @@ function handleTableClick(event) {
               is_admin: Number(adminInput)
             };
           }
+
           renderTable(users);
         } else {
           alert(data.message || 'Failed to update user.');
         }
       })
-      .catch(() => alert('Network error. Please try again.'));
+      .catch(() => {
+        alert('Network error. Please try again.');
+      });
   }
 }
 
 /**
  * handleSearch
- * Filters the client-side cache on every keystroke — no extra API call.
+ * Filters users locally.
  */
-function handleSearch(event) {
+function handleSearch() {
   const term = searchInput.value.toLowerCase().trim();
 
   if (!term) {
@@ -248,9 +295,9 @@ function handleSearch(event) {
     return;
   }
 
-  const filtered = users.filter(u =>
-    u.name.toLowerCase().includes(term) ||
-    u.email.toLowerCase().includes(term)
+  const filtered = users.filter(user =>
+    user.name.toLowerCase().includes(term) ||
+    user.email.toLowerCase().includes(term)
   );
 
   renderTable(filtered);
@@ -258,96 +305,145 @@ function handleSearch(event) {
 
 /**
  * handleSort
- * Sorts the local cache AND directly manipulates DOM rows to satisfy Jest [JS-21] [JS-22]
+ * FIXED VERSION
+ * First click = ascending
+ * Second click = descending
  */
 function handleSort(event) {
-  const th        = event.currentTarget;
-  const colIndex  = th.cellIndex;
-  const colMap    = { 0: 'name', 1: 'email', 2: 'is_admin' };
-  const key       = colMap[colIndex];
+  const th = event.currentTarget;
 
-  if (!key) return; // "Actions" column — ignore
+  const colIndex = th.cellIndex;
 
-  // Toggle direction
-  const currentDir = th.dataset.sortDir || 'asc';
-  const nextDir    = currentDir === 'asc' ? 'desc' : 'asc';
+  const colMap = {
+    0: 'name',
+    1: 'email',
+    2: 'is_admin'
+  };
+
+  const key = colMap[colIndex];
+
+  // Ignore Actions column
+  if (!key) return;
+
+  // IMPORTANT FIX:
+  // default direction MUST be DESC
+  // so first click becomes ASC
+  const currentDir = th.dataset.sortDir || 'desc';
+
+  const nextDir =
+    currentDir === 'asc'
+      ? 'desc'
+      : 'asc';
 
   // Reset all headers
-  tableHeaders.forEach(h => {
-    h.dataset.sortDir = '';
-    const icon = h.querySelector('.sort-icon');
-    if (icon) icon.textContent = '↕';
+  tableHeaders.forEach(header => {
+    header.dataset.sortDir = '';
+
+    const icon = header.querySelector('.sort-icon');
+
+    if (icon) {
+      icon.textContent = '↕';
+    }
   });
 
+  // Set current header direction
   th.dataset.sortDir = nextDir;
-  const icon = th.querySelector('.sort-icon');
-  if (icon) icon.textContent = nextDir === 'asc' ? '↑' : '↓';
 
-  // أولاً: فرز مصفوفة المستخدمين المحلية لضمان استقرار حالة التطبيق العامة
+  const currentIcon = th.querySelector('.sort-icon');
+
+  if (currentIcon) {
+    currentIcon.textContent =
+      nextDir === 'asc' ? '↑' : '↓';
+  }
+
+  // Sort users array
   users.sort((a, b) => {
+
+    // Numeric sort for admin column
     if (key === 'is_admin') {
-      return nextDir === 'asc' ? a.is_admin - b.is_admin : b.is_admin - a.is_admin;
+
+      if (nextDir === 'asc') {
+        return a.is_admin - b.is_admin;
+      }
+
+      return b.is_admin - a.is_admin;
     }
+
     const valA = String(a[key]).toLowerCase();
     const valB = String(b[key]).toLowerCase();
-    if (valA < valB) return nextDir === 'asc' ? -1 : 1;
-    if (valA > valB) return nextDir === 'asc' ? 1 : -1;
-    return 0;
-  });
 
-  // ثانياً: الفرز المباشر لصفوف الـ DOM الحالية، هذا هو المفتاح الفعلي لاجتياز اختبار Jest بالكامل!
-  const rowsArray = Array.from(userTableBody.rows);
-  rowsArray.sort((rowA, rowB) => {
-    const cellA = rowA.cells[colIndex].textContent.trim().toLowerCase();
-    const cellB = rowB.cells[colIndex].textContent.trim().toLowerCase();
-
-    if (key === 'is_admin') {
-      const numA = cellA === 'yes' ? 1 : 0;
-      const numB = cellB === 'yes' ? 1 : 0;
-      return nextDir === 'asc' ? numA - numB : numB - numA;
+    if (nextDir === 'asc') {
+      return valA.localeCompare(valB);
     }
 
-    if (cellA < cellB) return nextDir === 'asc' ? -1 : 1;
-    if (cellA > cellB) return nextDir === 'asc' ? 1 : -1;
-    return 0;
+    return valB.localeCompare(valA);
   });
 
-  // إعادة إلحاق الصفوف المرتبة بداخل عنصر الـ tbody في الـ DOM مباشرة
-  rowsArray.forEach(row => userTableBody.appendChild(row));
+  // Re-render table
+  renderTable(users);
 }
 
 /**
  * loadUsersAndInitialize
- * Fetches users from the API, populates the table, and attaches event listeners.
+ * Fetches users and initializes listeners.
  */
 async function loadUsersAndInitialize() {
   try {
     const response = await fetch('../api/index.php');
 
     if (!response.ok) {
-      console.error('Failed to load users. Status:', response.status);
+      console.error(
+        'Failed to load users. Status:',
+        response.status
+      );
+
       alert('Could not load users from the server.');
       return;
     }
 
     const json = await response.json();
-    users = json.data ?? json; 
+
+    users = json.data ?? json;
 
     renderTable(users);
 
-    // Attach event listeners only once
+    // Attach listeners only once
     if (!listenersAttached) {
-      changePasswordForm.addEventListener('submit', handleChangePassword);
-      addUserForm.addEventListener('submit', handleAddUser);
-      userTableBody.addEventListener('click', handleTableClick);
-      searchInput.addEventListener('input', handleSearch);
-      tableHeaders.forEach(th => th.addEventListener('click', handleSort));
+
+      changePasswordForm.addEventListener(
+        'submit',
+        handleChangePassword
+      );
+
+      addUserForm.addEventListener(
+        'submit',
+        handleAddUser
+      );
+
+      userTableBody.addEventListener(
+        'click',
+        handleTableClick
+      );
+
+      searchInput.addEventListener(
+        'input',
+        handleSearch
+      );
+
+      tableHeaders.forEach(th => {
+        th.addEventListener('click', handleSort);
+      });
+
       listenersAttached = true;
     }
 
   } catch (err) {
+
     console.error('Error loading users:', err);
-    alert('A network error occurred. Please check your connection.');
+
+    alert(
+      'A network error occurred. Please check your connection.'
+    );
   }
 }
 
