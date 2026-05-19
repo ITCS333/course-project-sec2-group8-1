@@ -1,8 +1,4 @@
 <?php
-/**
- * User Management API
- * ITCS333 Internet Software Development
- */
 
 // ============================================================================
 // HEADERS
