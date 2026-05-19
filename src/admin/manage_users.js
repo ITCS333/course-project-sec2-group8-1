@@ -6,9 +6,9 @@ let listenersAttached = false;
 
 // --- Element Selections ---
 const userTableBody       = document.getElementById('user-table-body');
-const addUserForm         = document.getElementById('add-user-form');
+const addUserForm          = document.getElementById('add-user-form');
 const changePasswordForm  = document.getElementById('password-form');
-const searchInput         = document.getElementById('search-input');
+const searchInput          = document.getElementById('search-input');
 const tableHeaders        = document.querySelectorAll('#user-table thead th');
 
 // --- Functions ---
@@ -80,9 +80,10 @@ function handleChangePassword(event) {
     return;
   }
 
-  // Read the logged-in admin id stored in sessionStorage / localStorage by auth layer.
-  // Falls back to 1 (seed admin) if not set.
-  const id = sessionStorage.getItem('user_id') || localStorage.getItem('user_id') || 1;
+  // Safe check for sessionStorage and localStorage to prevent Jest ReferenceError
+  const sessionUid = (typeof window !== 'undefined' && window.sessionStorage) ? sessionStorage.getItem('user_id') : null;
+  const localUid   = (typeof window !== 'undefined' && window.localStorage) ? localStorage.getItem('user_id') : null;
+  const id = sessionUid || localUid || 1;
 
   fetch('../api/index.php?action=change_password', {
     method: 'POST',
@@ -274,12 +275,25 @@ function handleSort(event) {
     if (key === 'is_admin') {
       cmp = a.is_admin - b.is_admin;
     } else {
-      cmp = String(a[key]).localeCompare(String(b[key]));
+      // تحويل الأحرف إلى صغيرة لضمان استقرار وموثوقية الترتيب الأبجدي في بيئة اختبار Jest
+      const strA = String(a[key]).toLowerCase();
+      const strB = String(b[key]).toLowerCase();
+      cmp = strA.localeCompare(strB);
     }
     return nextDir === 'asc' ? cmp : -cmp;
   });
 
-  renderTable(users);
+  // نقوم بتطبيق الفرز مباشرة مع الأخذ بعين الاعتبار إذا كان هناك نص بحث نشط حالياً
+  const term = searchInput.value.toLowerCase().trim();
+  if (term) {
+    const filtered = users.filter(u =>
+      u.name.toLowerCase().includes(term) ||
+      u.email.toLowerCase().includes(term)
+    );
+    renderTable(filtered);
+  } else {
+    renderTable(users);
+  }
 }
 
 /**
