@@ -1,5 +1,4 @@
-// --- Global Data Store ---
-// تم إدراج بياناتك الجامعية كعنصر افتراضي أول في القائمة
+// --- Global Data Store 
 let users = [
   { id: 1, name: "Ali Adel", email: "202304043@stu.uob.edu.bh", is_admin: 1 }
 ];
