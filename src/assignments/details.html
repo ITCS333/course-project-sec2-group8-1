@@ -1,102 +1,223 @@
-<!--
-  Requirement: Create the Dedicated Page for a Single Assignment
-
-  Instructions:
-  This page displays the full details for one assignment and allows
-  students to read and post discussion comments.
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- TODO: Add <meta> tags for charset (UTF-8) and viewport
-         (width=device-width, initial-scale=1.0). -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment Details</title>
+    
+    <!-- Modern Minimalist CSS Styling Framework -->
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --card-color: #ffffff;
+            --text-main: #212529;
+            --text-muted: #6c757d;
+            --primary: #0d6efd;
+            --primary-hover: #0b5ed7;
+            --border-color: #dee2e6;
+            --radius: 8px;
+        }
 
-    <!-- TODO: Add a <title>, e.g., "Assignment Details". -->
+        body {
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
 
-    <!-- TODO: Link to your CSS framework or stylesheet. -->
+        header {
+            background-color: var(--card-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 2rem 1rem;
+            text-align: center;
+        }
 
-    <!-- Required: link details.js with defer. -->
+        header h1 {
+            margin: 0;
+            font-size: 2.25rem;
+            color: var(--text-main);
+        }
+
+        main {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        article, section {
+            background-color: var(--card-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        #assignment-due-date {
+            font-weight: 600;
+            color: #dc3545;
+            margin-top: 0;
+            font-size: 1.1rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        #assignment-description {
+            white-space: pre-wrap;
+        }
+
+        ul {
+            padding-left: 1.25rem;
+        }
+
+        ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Discussion Forum Layout */
+        #comment-list article {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: calc(var(--radius) - 2px);
+            box-shadow: none;
+        }
+
+        #comment-list article p {
+            margin: 0 0 0.5rem 0;
+        }
+
+        #comment-list footer {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* Form Controls styling */
+        fieldset {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+        }
+
+        legend {
+            font-weight: bold;
+            padding: 0 0.5rem;
+            color: var(--primary);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            box-sizing: border-box;
+            border: 1px solid var(--border-color);
+            border-radius: calc(var(--radius) - 4px);
+            padding: 0.75rem;
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+            margin-bottom: 1rem;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+        }
+
+        button[type="submit"] {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: calc(var(--radius) - 4px);
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: var(--primary-hover);
+        }
+    </style>
+
+    <!-- Required: link details.js with defer -->
     <script src="details.js" defer></script>
 </head>
 <body>
 
-    <!-- TODO: Create a <header>.
-         Inside it, add an <h1 id="assignment-title">.
-         details.js will set its textContent to the assignment's title.
-         Leave it empty for now. -->
+    <header>
+        <!-- details.js will insert the assignment title here dynamically -->
+        <h1 id="assignment-title"></h1>
+    </header>
 
-    <!-- TODO: Create the <main> content area. -->
+    <main>
 
         <!-- ============================================================
              Section 1: Assignment Information
              ============================================================ -->
-        <!-- TODO: Use an <article> to display the main assignment
-             information. -->
+        <article>
+            <!-- details.js will display "Due: YYYY-MM-DD" here -->
+            <p id="assignment-due-date"></p>
 
-            <!-- TODO: Add a <p id="assignment-due-date">.
-                 details.js will set it to "Due: YYYY-MM-DD"
-                 using the due_date column from the assignments table. -->
+            <h2>Description</h2>
+            <!-- details.js will inject the description string here -->
+            <p id="assignment-description"></p>
 
-            <!-- TODO: Add a <h2> "Description". -->
-
-            <!-- TODO: Add a <p id="assignment-description">.
-                 details.js will set its textContent to the assignment's
-                 description from the assignments table. -->
-
-            <!-- TODO: Add a <h2> "Attached Files &amp; Links". -->
-
-            <!-- TODO: Add a <ul id="assignment-files-list">.
-                 details.js will populate this list from the files column
-                 in the assignments table. That column is a JSON-encoded
-                 array of URL strings. Each URL becomes a
-                 <li><a href="{url}">{url}</a></li> item.
-                 Leave the list empty here. -->
-
-        <!-- End of <article> -->
+            <h2>Attached Files &amp; Links</h2>
+            <!-- details.js will dynamically turn JSON array items into <li> elements here -->
+            <ul id="assignment-files-list"></ul>
+        </article>
 
 
         <!-- ============================================================
              Section 2: Discussion Forum
              ============================================================ -->
-        <!-- TODO: Create a <section id="discussion-forum">. -->
-
-            <!-- TODO: Add a <h2> "Questions &amp; Discussion". -->
+        <section id="discussion-forum">
+            <h2>Questions &amp; Discussion</h2>
 
             <!-- Subsection 2.1: Existing Comments -->
-            <!-- TODO: Add a <div id="comment-list">.
-                 details.js will inject one <article> per comment here.
-                 Each comment article follows this structure:
-
-                 <article>
-                     <p>Comment text goes here.</p>
-                     <footer>Posted by: Author Name</footer>
-                 </article>
-
-                 Comments come from the comments_assignment table
-                 (columns: id, assignment_id, author, text, created_at).
-                 Leave the div empty here. -->
+            <!-- details.js will inject comment <article> elements directly into this container -->
+            <div id="comment-list"></div>
 
             <!-- Subsection 2.2: Add a Comment Form -->
-            <!-- TODO: Create a <form id="comment-form"> (action="#").
-                 The id is required by details.js. -->
+            <form id="comment-form" action="#">
+                <fieldset>
+                    <legend>Ask a Question</legend>
 
-                <!-- TODO: Use a <fieldset> to group the controls. -->
-                    <!-- TODO: Add a <legend>, e.g., "Ask a Question". -->
+                    <label poured="new-comment" for="new-comment">Your Comment or Question:</label>
+                    <textarea id="new-comment" name="new-comment" required placeholder="Type your message here..."></textarea>
 
-                    <!-- TODO: Add a <label> and <textarea> for the comment.
-                         - label for="new-comment"
-                         - textarea id="new-comment", required
-                         - The id must be exactly "new-comment" as
-                           details.js reads this element by that id. -->
+                    <button type="submit">Post Comment</button>
+                </fieldset>
+            </form>
+        </section>
 
-                    <!-- TODO: Add a submit <button>.
-                         - type="submit"
-                         - Text: "Post Comment" -->
-                <!-- End of <fieldset> -->
-            <!-- End of <form> -->
+    </main>
 
-        <!-- End of <section#discussion-forum> -->
-
-    <!-- End of <main> -->
 </body>
 </html>
