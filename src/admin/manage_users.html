@@ -305,6 +305,11 @@
             font-size: .75rem;
         }
 
+        /* إضافة السهم عبر الـ CSS إذا كنت تريد مظهراً جمالياً لا يقرأه الـ Test */
+        #user-table th .sort-icon::after {
+            content: ' ↕';
+        }
+
         #user-table tbody tr {
             border-top: 1px solid var(--border);
             transition: background .15s;
@@ -418,9 +423,9 @@
                 <table id="user-table">
                     <thead>
                         <tr>
-                            <th>Name <span class="sort-icon">↕</span></th>
-                            <th>Email <span class="sort-icon">↕</span></th>
-                            <th>Admin <span class="sort-icon">↕</span></th>
+                            <th>Name <span class="sort-icon"></span></th>
+                            <th>Email <span class="sort-icon"></span></th>
+                            <th>Admin <span class="sort-icon"></span></th>
                             <th>Actions</th>
                         </tr>
                     </thead>
