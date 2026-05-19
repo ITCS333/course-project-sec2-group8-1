@@ -1,78 +1,89 @@
 /*
   Requirement: Populate the "Course Assignments" list page.
-
-  Instructions:
-  1. This file is already linked to `list.html` via:
-         <script src="list.js" defer></script>
-
-  2. In `list.html`, the <section id="assignment-list-section"> is the
-     container that this script populates.
-
-  3. Implement the TODOs below.
-
-  API base URL: ./api/index.php
-  Successful list response shape: { success: true, data: [ ...assignment objects ] }
-  Each assignment object shape:
-    {
-      id:          number,   // integer primary key from the assignments table
-      title:       string,
-      due_date:    string,   // "YYYY-MM-DD" — matches the SQL column name
-      description: string,
-      files:       string[]  // already decoded array of URL strings
-    }
+  Implementation: list.js
 */
 
 // --- Element Selections ---
-// TODO: Select the section for the assignment list using its
-//       id 'assignment-list-section'.
+// Selects the section container that holds the dynamic assignment card list
+const assignmentListSection = document.getElementById('assignment-list-section');
 
 // --- Functions ---
 
 /**
- * TODO: Implement createAssignmentArticle.
+ * Creates and returns an <article> element matching the design architecture.
+ * Safe text rendering properties (textContent) are utilized to eliminate injection risks.
  *
- * Parameters:
- *   assignment — one object from the API response with the shape:
- *     {
- *       id:          number,
- *       title:       string,
- *       due_date:    string,   // "YYYY-MM-DD" — use due_date, not dueDate
- *       description: string,
- *       files:       string[]
- *     }
- *
- * Returns:
- *   An <article> element matching the structure shown in list.html:
- *     <article>
- *       <h2>{title}</h2>
- *       <p>Due: {due_date}</p>
- *       <p>{description}</p>
- *       <a href="details.html?id={id}">View Details &amp; Discussion</a>
- *     </article>
- *
- * Important: the href MUST be "details.html?id=<id>" (integer id from
- * the assignments table) so that details.js can read the id from the URL.
+ * @param {Object} assignment — one object from the API response
+ * @returns {HTMLElement} <article>
  */
 function createAssignmentArticle(assignment) {
-  // ... your implementation here ...
+  // Create all necessary elements for structural semantics
+  const article = document.createElement('article');
+  const heading = document.createElement('h2');
+  const dueDatePara = document.createElement('p');
+  const descPara = document.createElement('p');
+  const detailsLink = document.createElement('a');
+
+  // Populate textual parameters safely
+  heading.textContent = assignment.title;
+  dueDatePara.textContent = "Due: " + assignment.due_date; // Using the SQL column layout template
+  descPara.textContent = assignment.description;
+  
+  // Configure the anchor target linking directly to the dynamic details view page
+  detailsLink.href = `details.html?id=${encodeURIComponent(assignment.id)}`;
+  detailsLink.textContent = "View Details & Discussion";
+
+  // Build the hierarchical component tree layout
+  article.appendChild(heading);
+  article.appendChild(dueDatePara);
+  article.appendChild(descPara);
+  article.appendChild(detailsLink);
+
+  return article;
 }
 
 /**
- * TODO: Implement loadAssignments (async).
- *
- * It should:
- * 1. Use fetch() to GET data from './api/index.php'.
- *    The API returns JSON in the shape:
- *      { success: true, data: [ ...assignment objects ] }
- * 2. Parse the JSON response.
- * 3. Clear any existing content from the list section.
- * 4. Loop through the data array. For each assignment object:
- *    - Call createAssignmentArticle(assignment).
- *    - Append the returned <article> to the list section.
+ * Asynchronously fetches the entire assignments catalog array from the API endpoint,
+ * cleans the interface viewport canvas, and loads the active item cards.
  */
 async function loadAssignments() {
-  // ... your implementation here ...
+  try {
+    const response = await fetch('./api/index.php');
+
+    if (!response.ok) {
+      throw new Error(`Network tracking profile error encountered: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    // Securely flush previous placeholders or broken state items 
+    assignmentListSection.innerHTML = "";
+
+    if (result && result.success === true && Array.isArray(result.data)) {
+      if (result.data.length === 0) {
+        // Optional user experience optimization: handle empty states elegantly
+        const emptyMessage = document.createElement('p');
+        emptyMessage.textContent = "No current course assignments are posted.";
+        emptyMessage.style.color = "var(--text-muted)";
+        assignmentListSection.appendChild(emptyMessage);
+        return;
+      }
+
+      // Loop through assignments data records to append each node block
+      result.data.forEach(assignment => {
+        const assignmentCard = createAssignmentArticle(assignment);
+        assignmentListSection.appendChild(assignmentCard);
+      });
+    } else {
+      console.error("API indicated failure processing payload response:", result);
+      assignmentListSection.textContent = "Failed to load course assignments data models.";
+    }
+
+  } catch (error) {
+    console.error("Critical error catch during data execution flow initialization:", error);
+    assignmentListSection.textContent = "Unable to reach the server. Please verify connection metrics.";
+  }
 }
 
-// --- Initial Page Load ---
+// --- Initial Page Load Sequence Trigger ---
 loadAssignments();
