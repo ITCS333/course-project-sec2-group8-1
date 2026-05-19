@@ -1,150 +1,438 @@
-<!--
-  Requirement: Create a Responsive Admin Portal
-
-  Instructions:
-  Fill in the HTML elements as described in the comments.
-  Use the provided IDs for the elements that require them.
-  Focus on creating a clear and semantic HTML structure.
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- TODO: Add the 'meta' tag for character encoding (UTF-8). -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+    <script src="manage_users.js" defer></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    <!-- TODO: Add the responsive 'viewport' meta tag. -->
+        :root {
+            --bg:        #0d0f14;
+            --surface:   #161920;
+            --surface2:  #1e222e;
+            --border:    #2a2f3d;
+            --accent:    #5b7fff;
+            --accent2:   #ff6b6b;
+            --accent3:   #38d9a9;
+            --text:      #e8eaf0;
+            --muted:     #7c859e;
+            --radius:    12px;
+            --shadow:    0 4px 24px rgba(0,0,0,.45);
+        }
 
-    <!-- TODO: Add a 'title' for the page, e.g., "Admin Portal". -->
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
 
-    <!-- TODO: Link to a CSS file or a CSS framework. -->
+        /* ─── HEADER ─────────────────────────────────────── */
+        header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            height: 64px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
 
-    <!-- TODO: Add a <script> tag that loads 'manage_users.js' with the 'defer' attribute.
-         Example: <script src="manage_users.js" defer></script> -->
+        header .logo-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
+        }
 
+        header h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: -.01em;
+            color: var(--text);
+        }
+
+        header h1 span { color: var(--accent); }
+
+        header .badge {
+            margin-left: auto;
+            font-size: .7rem;
+            font-weight: 600;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            background: rgba(91,127,255,.15);
+            color: var(--accent);
+            border: 1px solid rgba(91,127,255,.3);
+            padding: .25rem .65rem;
+            border-radius: 999px;
+        }
+
+        /* ─── MAIN LAYOUT ────────────────────────────────── */
+        main {
+            max-width: 960px;
+            margin: 2.5rem auto;
+            padding: 0 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* ─── CARD ───────────────────────────────────────── */
+        section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        section h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+        }
+
+        section h2::before {
+            content: '';
+            display: block;
+            width: 4px; height: 1em;
+            border-radius: 2px;
+            background: var(--accent);
+        }
+
+        section h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: .85rem;
+            font-weight: 700;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin: 1.75rem 0 1rem;
+        }
+
+        /* ─── FIELDSET ───────────────────────────────────── */
+        fieldset {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: .75rem 1.25rem;
+        }
+
+        legend {
+            font-family: 'Syne', sans-serif;
+            font-size: .75rem;
+            font-weight: 700;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: var(--accent);
+            padding: 0 .5rem;
+        }
+
+        label {
+            font-size: .82rem;
+            font-weight: 500;
+            color: var(--muted);
+            display: block;
+            margin-bottom: .3rem;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .field.full { grid-column: 1 / -1; }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        select {
+            width: 100%;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: .9rem;
+            padding: .6rem .9rem;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(91,127,255,.15);
+        }
+
+        select option { background: var(--surface2); }
+
+        /* ─── BUTTONS ────────────────────────────────────── */
+        button[type="submit"] {
+            grid-column: 1 / -1;
+            font-family: 'Syne', sans-serif;
+            font-size: .85rem;
+            font-weight: 700;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            padding: .7rem 1.5rem;
+            transition: opacity .2s, transform .15s;
+        }
+
+        button[type="submit"]:hover { opacity: .85; transform: translateY(-1px); }
+        button[type="submit"]:active { transform: translateY(0); }
+
+        #change {
+            background: linear-gradient(135deg, #5b7fff, #7b5ea7);
+            color: #fff;
+        }
+
+        #add {
+            background: linear-gradient(135deg, #38d9a9, #20b2aa);
+            color: #0d0f14;
+        }
+
+        /* ─── DETAILS / SUMMARY ──────────────────────────── */
+        details {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        summary {
+            font-family: 'Syne', sans-serif;
+            font-size: .85rem;
+            font-weight: 700;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            color: var(--accent3);
+            padding: .9rem 1.25rem;
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            background: rgba(56,217,169,.06);
+            border-bottom: 1px solid transparent;
+            transition: background .2s;
+        }
+
+        summary::-webkit-details-marker { display: none; }
+
+        summary::before {
+            content: '＋';
+            font-size: 1rem;
+            transition: transform .25s;
+        }
+
+        details[open] summary {
+            border-bottom-color: var(--border);
+            background: rgba(56,217,169,.1);
+        }
+
+        details[open] summary::before { transform: rotate(45deg); }
+
+        details fieldset {
+            border: none;
+            border-radius: 0;
+            background: var(--surface2);
+            padding: 1.5rem;
+        }
+
+        /* ─── SEARCH ─────────────────────────────────────── */
+        #search-input {
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        /* ─── TABLE ──────────────────────────────────────── */
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        #user-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .88rem;
+        }
+
+        #user-table thead {
+            background: var(--surface2);
+        }
+
+        #user-table th {
+            font-family: 'Syne', sans-serif;
+            font-size: .72rem;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--muted);
+            padding: .85rem 1rem;
+            text-align: left;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+            transition: color .2s;
+        }
+
+        #user-table th:hover { color: var(--text); }
+
+        #user-table th .sort-icon {
+            display: inline-block;
+            margin-left: .35rem;
+            opacity: .4;
+            font-size: .75rem;
+        }
+
+        #user-table tbody tr {
+            border-top: 1px solid var(--border);
+            transition: background .15s;
+        }
+
+        #user-table tbody tr:hover { background: rgba(255,255,255,.03); }
+
+        #user-table td {
+            padding: .85rem 1rem;
+            color: var(--text);
+        }
+
+        /* ─── RESPONSIVE ─────────────────────────────────── */
+        @media (max-width: 600px) {
+            fieldset {
+                grid-template-columns: 1fr;
+            }
+            button[type="submit"] { grid-column: 1; }
+        }
+    </style>
 </head>
 <body>
 
-    <!-- TODO: Create a 'header' element for the top of the page. -->
-        <!-- TODO: Inside the header, add a main heading (e.g., 'h1') with the text "Admin Portal". -->
-    <!-- End of the header. -->
+    <header>
+        <div class="logo-dot"></div>
+        <h1>Admin <span>Portal</span></h1>
+        <span class="badge">ITCS333</span>
+    </header>
 
-    <!-- TODO: Create a 'main' element to hold the primary content of the portal. -->
+    <main>
 
-        <!-- Section 1: Password Management -->
-        <!-- TODO: Create a 'section' for the password management functionality. -->
-            <!-- TODO: Add a sub-heading (e.g., 'h2') with the text "Change Your Password". -->
+        <!-- ── Section 1: Password Management ── -->
+        <section>
+            <h2>Change Your Password</h2>
 
-            <!-- TODO: Create a 'form' for changing the password.
-                 - action="#"
-                 - id="password-form" -->
-                <!-- TODO: Use a 'fieldset' to group the password-related fields. -->
-                    <!-- TODO: Add a 'legend' for the fieldset, e.g., "Password Update". -->
+            <form action="#" id="password-form">
+                <fieldset>
+                    <legend>Password Update</legend>
 
-                    <!-- TODO: Add a 'label' for the current password input. 'for' should be "current-password". -->
-                    <!-- TODO: Add an 'input' for the current password.
-                         - type="password"
-                         - id="current-password"
-                         - required -->
+                    <div class="field">
+                        <label for="current-password">Current Password</label>
+                        <input type="password" id="current-password" required placeholder="Enter current password">
+                    </div>
 
-                    <!-- TODO: Add a 'label' for the new password input. 'for' should be "new-password". -->
-                    <!-- TODO: Add an 'input' for the new password.
-                         - type="password"
-                         - id="new-password"
-                         - minlength="8"
-                         - required -->
+                    <div class="field">
+                        <!-- spacer on desktop -->
+                    </div>
 
-                    <!-- TODO: Add a 'label' for the confirm password input. 'for' should be "confirm-password". -->
-                    <!-- TODO: Add an 'input' to confirm the new password.
-                         - type="password"
-                         - id="confirm-password"
-                         - required -->
+                    <div class="field">
+                        <label for="new-password">New Password</label>
+                        <input type="password" id="new-password" minlength="8" required placeholder="Min. 8 characters">
+                    </div>
 
-                    <!-- TODO: Add a 'button' to submit the form.
-                         - type="submit"
-                         - id="change"
-                         - Text: "Update Password" -->
+                    <div class="field">
+                        <label for="confirm-password">Confirm New Password</label>
+                        <input type="password" id="confirm-password" required placeholder="Repeat new password">
+                    </div>
 
-                <!-- End of the fieldset. -->
-            <!-- End of the password form. -->
-        <!-- End of the password management section. -->
+                    <button type="submit" id="change">Update Password</button>
+                </fieldset>
+            </form>
+        </section>
 
 
-        <!-- Section 2: User Management -->
-        <!-- TODO: Create another 'section' for the user management functionality. -->
-            <!-- TODO: Add a sub-heading (e.g., 'h2') with the text "Manage Users". -->
+        <!-- ── Section 2: User Management ── -->
+        <section>
+            <h2>Manage Users</h2>
 
-            <!-- Subsection 2.1: Add New User Form -->
-            <!-- TODO: Create a 'details' element so the "Add User" form can be collapsed. -->
-                <!-- TODO: Add a 'summary' element inside 'details' with the text "Add New User". -->
+            <!-- 2.1 Add New User (collapsible) -->
+            <details>
+                <summary>Add New User</summary>
 
-                <!-- TODO: Create a 'form' for adding a new user.
-                     - action="#"
-                     - id="add-user-form" -->
-                    <!-- TODO: Use a 'fieldset' to group the new user fields. -->
-                        <!-- TODO: Add a 'legend' for the fieldset, e.g., "New User Information". -->
+                <form action="#" id="add-user-form">
+                    <fieldset>
+                        <legend>New User Information</legend>
 
-                        <!-- TODO: Add a 'label' and 'input' for the user's full name.
-                             - label 'for': "user-name"
-                             - input 'id': "user-name"
-                             - input 'type': "text"
-                             - input: required -->
+                        <div class="field">
+                            <label for="user-name">Full Name</label>
+                            <input type="text" id="user-name" required placeholder="e.g. Ahmed Al-Mansoori">
+                        </div>
 
-                        <!-- TODO: Add a 'label' and 'input' for the user's email.
-                             - label 'for': "user-email"
-                             - input 'id': "user-email"
-                             - input 'type': "email"
-                             - input: required -->
+                        <div class="field">
+                            <label for="user-email">Email Address</label>
+                            <input type="email" id="user-email" required placeholder="e.g. 20xxxxxxx@stu.uob.edu.bh">
+                        </div>
 
-                        <!-- TODO: Add a 'label' and 'input' for the default password.
-                             - label 'for': "default-password"
-                             - input 'id': "default-password"
-                             - input 'type': "password"
-                             - input: required
-                             - minlength="8" -->
+                        <div class="field">
+                            <label for="default-password">Default Password</label>
+                            <input type="password" id="default-password" required minlength="8" placeholder="Min. 8 characters">
+                        </div>
 
-                        <!-- TODO: Add a 'label' and 'select' for the admin status.
-                             - label 'for': "is-admin"
-                             - select 'id': "is-admin"
-                             - Add two 'option' elements:
-                               - value="0" text "Student"
-                               - value="1" text "Admin" -->
+                        <div class="field">
+                            <label for="is-admin">Role</label>
+                            <select id="is-admin">
+                                <option value="0">Student</option>
+                                <option value="1">Admin</option>
+                            </select>
+                        </div>
 
-                        <!-- TODO: Add a 'button' to submit the form.
-                             - type="submit"
-                             - id="add"
-                             - Text: "Add User" -->
+                        <button type="submit" id="add">Add User</button>
+                    </fieldset>
+                </form>
+            </details>
 
-                    <!-- End of the fieldset. -->
-                <!-- End of the add user form. -->
-            <!-- End of the 'details' element. -->
+            <!-- 2.2 User List -->
+            <h3>Registered Users</h3>
 
+            <input type="text" id="search-input" placeholder="Search by name or email…">
 
-            <!-- Subsection 2.2: User List -->
-            <!-- TODO: Add a sub-heading (e.g., 'h3') for the list of users, e.g., "Registered Users". -->
+            <div class="table-wrap">
+                <table id="user-table">
+                    <thead>
+                        <tr>
+                            <th>Name <span class="sort-icon">↕</span></th>
+                            <th>Email <span class="sort-icon">↕</span></th>
+                            <th>Admin <span class="sort-icon">↕</span></th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-table-body">
+                        <!-- Populated dynamically by manage_users.js -->
+                    </tbody>
+                </table>
+            </div>
 
-            <!-- TODO: Add a search input field.
-                 - type="text"
-                 - id="search-input"
-                 - placeholder e.g. "Search by name or email..." -->
+        </section>
 
-            <!-- TODO: Create a 'table' to display the list of users.
-                 - id="user-table" -->
-                <!-- TODO: Create a 'thead' for the table headers. -->
-                    <!-- TODO: Create a 'tr' (table row) inside the 'thead'. -->
-                        <!-- TODO: Create 'th' (table header) cells for:
-                             "Name", "Email", "Admin", "Actions"
-                             Each 'th' should be clickable for sorting. -->
-                    <!-- End of the row. -->
-                <!-- End of 'thead'. -->
-
-                <!-- TODO: Create a 'tbody' for the table body.
-                     - id="user-table-body"
-                     The rows will be populated dynamically by manage_users.js.
-                     Do NOT add any hardcoded rows here. -->
-            <!-- End of the table. -->
-
-        <!-- End of the user management section. -->
-
-    <!-- End of the main content area. -->
+    </main>
 
 </body>
 </html>
