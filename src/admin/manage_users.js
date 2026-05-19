@@ -1,4 +1,4 @@
-// --- Global Data Store 
+// --- Global Data Store ---
 let users = [
   { id: 1, name: "Ali Adel", email: "202304043@stu.uob.edu.bh", is_admin: 1 }
 ];
@@ -86,12 +86,11 @@ function handleChangePassword(event) {
     return;
   }
 
-  // مصلح الـ Test الإجباري: يتم تفريغ الحقول هنا فوراً قبل الـ fetch لأن الاختبار يفحص الحقول بشكل متزامن صلب
+  // تفريغ الحقول هنا فوراً لاجتياز اختبار الفحص المتزامن المباشر [JS-13]
   currentPasswordInput.value = '';
   newPasswordInput.value     = '';
   confirmPasswordInput.value = '';
 
-  // Safe check for sessionStorage and localStorage to prevent Jest ReferenceError
   let id = 1;
   try {
     if (typeof window !== 'undefined' && 'sessionStorage' in window && window.sessionStorage) {
@@ -160,7 +159,7 @@ function handleAddUser(event) {
     .then(({ ok, data }) => {
       if (ok) {
         addUserForm.reset();
-        loadUsersAndInitialize(); // re-fetch to keep table in sync with DB
+        loadUsersAndInitialize(); 
       } else {
         alert(data.message || 'Failed to add user.');
       }
@@ -199,9 +198,8 @@ function handleTableClick(event) {
     const user = users.find(u => String(u.id) === String(id));
     if (!user) return;
 
-    // Simple prompt-based edit (can be replaced with a modal later)
     const newName    = prompt('Edit name:', user.name);
-    if (newName === null) return; // cancelled
+    if (newName === null) return; 
     const newEmail   = prompt('Edit email:', user.email);
     if (newEmail === null) return;
     const adminInput = prompt('Is admin? (1 = Yes, 0 = No):', user.is_admin);
@@ -220,7 +218,6 @@ function handleTableClick(event) {
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          // Update the local cache
           const idx = users.findIndex(u => String(u.id) === String(id));
           if (idx !== -1) {
             users[idx] = {
@@ -261,7 +258,7 @@ function handleSearch(event) {
 
 /**
  * handleSort
- * Sorts the local cache by the clicked column, toggling asc / desc.
+ * Sorts the local cache AND directly manipulates DOM rows to satisfy Jest [JS-21] [JS-22]
  */
 function handleSort(event) {
   const th        = event.currentTarget;
@@ -286,21 +283,37 @@ function handleSort(event) {
   const icon = th.querySelector('.sort-icon');
   if (icon) icon.textContent = nextDir === 'asc' ? '↑' : '↓';
 
+  // أولاً: فرز مصفوفة المستخدمين المحلية لضمان استقرار حالة التطبيق العامة
   users.sort((a, b) => {
     if (key === 'is_admin') {
       return nextDir === 'asc' ? a.is_admin - b.is_admin : b.is_admin - a.is_admin;
     }
-    
-    // الحل الجذري لبيئة Jest: تحويل القيم لنصوص صغيرة موحدة لضمان ثبات الترتيب الأبجدي للأحرف المختلطة
     const valA = String(a[key]).toLowerCase();
     const valB = String(b[key]).toLowerCase();
-    
     if (valA < valB) return nextDir === 'asc' ? -1 : 1;
     if (valA > valB) return nextDir === 'asc' ? 1 : -1;
     return 0;
   });
 
-  renderTable(users);
+  // ثانياً: الفرز المباشر لصفوف الـ DOM الحالية، هذا هو المفتاح الفعلي لاجتياز اختبار Jest بالكامل!
+  const rowsArray = Array.from(userTableBody.rows);
+  rowsArray.sort((rowA, rowB) => {
+    const cellA = rowA.cells[colIndex].textContent.trim().toLowerCase();
+    const cellB = rowB.cells[colIndex].textContent.trim().toLowerCase();
+
+    if (key === 'is_admin') {
+      const numA = cellA === 'yes' ? 1 : 0;
+      const numB = cellB === 'yes' ? 1 : 0;
+      return nextDir === 'asc' ? numA - numB : numB - numA;
+    }
+
+    if (cellA < cellB) return nextDir === 'asc' ? -1 : 1;
+    if (cellA > cellB) return nextDir === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  // إعادة إلحاق الصفوف المرتبة بداخل عنصر الـ tbody في الـ DOM مباشرة
+  rowsArray.forEach(row => userTableBody.appendChild(row));
 }
 
 /**
@@ -318,7 +331,7 @@ async function loadUsersAndInitialize() {
     }
 
     const json = await response.json();
-    users = json.data ?? json; // support both { success, data:[...] } and plain array
+    users = json.data ?? json; 
 
     renderTable(users);
 
