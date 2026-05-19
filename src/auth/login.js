@@ -1,27 +1,18 @@
-/*
-  Requirement: Add client-side validation to the login form.
-
-  Instructions:
-  1. This file is already linked to your HTML via a <script> tag with the 'defer' attribute
-     at the bottom of the <body> in login.html.
-  
-  2. In your login.html, a <div id="message-container"> has been added *after* the </fieldset>
-     but *before* the </form> closing tag. This div will be used to display success or error messages.
-  
-  3. Implement the JavaScript functionality as described in the TODO comments.
-*/
-
 // --- Element Selections ---
 // We can safely select elements here because 'defer' guarantees
 // the HTML document is parsed before this script runs.
 
 // TODO: Select the login form by its id "login-form".
+const loginForm = document.getElementById("login-form");
 
 // TODO: Select the email input element by its ID.
+const emailInput = document.getElementById("email");
 
 // TODO: Select the password input element by its ID.
+const passwordInput = document.getElementById("password");
 
 // TODO: Select the message container element by its ID.
+const messageContainer = document.getElementById("message-container");
 
 // --- Functions ---
 
@@ -37,7 +28,10 @@
  * (this will allow for CSS styling of 'success' and 'error' states).
  */
 function displayMessage(message, type) {
-  // ... your implementation here ...
+  if (messageContainer) {
+    messageContainer.textContent = message;
+    messageContainer.className = type;
+  }
 }
 
 /**
@@ -53,7 +47,8 @@ function displayMessage(message, type) {
  * A simple regex for this purpose is: /\S+@\S+\.\S+/
  */
 function isValidEmail(email) {
-  // ... your implementation here ...
+  const regex = /\S+@\S+\.\S+/;
+  return regex.test(email);
 }
 
 /**
@@ -67,7 +62,7 @@ function isValidEmail(email) {
  * 3. Return `false` if the password is not valid.
  */
 function isValidPassword(password) {
-  // ... your implementation here ...
+  return password.length >= 8;
 }
 
 /**
@@ -85,7 +80,31 @@ function isValidPassword(password) {
  * - (Optional) Clear the email and password input fields.
  */
 function handleLogin(event) {
-  // ... your implementation here ...
+  // 1. Prevent default behavior
+  event.preventDefault();
+
+  // 2. Get values and trim whitespace
+  const emailValue = emailInput.value.trim();
+  const passwordValue = passwordInput.value.trim();
+
+  // 3. Validate email
+  if (!isValidEmail(emailValue)) {
+    displayMessage("Invalid email format.", "error");
+    return; // stop execution
+  }
+
+  // 4. Validate password
+  if (!isValidPassword(passwordValue)) {
+    displayMessage("Password must be at least 8 characters.", "error");
+    return; // stop execution
+  }
+
+  // 5. Successful login
+  displayMessage("Login successful!", "success");
+  
+  // Clear input fields
+  emailInput.value = "";
+  passwordInput.value = "";
 }
 
 /**
@@ -97,7 +116,9 @@ function handleLogin(event) {
  * 3. The event listener should call the `handleLogin` function.
  */
 function setupLoginForm() {
-  // ... your implementation here ...
+  if (loginForm) {
+    loginForm.addEventListener("submit", handleLogin);
+  }
 }
 
 // --- Initial Page Load ---
