@@ -14,6 +14,7 @@ The website covers five functional areas, each assigned to one team member.
 ## Live Demo
 
 > **Replit Deployment:** Update this link with your Replit deployment URL once the project is live.
+> https://course-project-sec-2-group-8-1--mirshabbirram2.replit.app
 
 ---
 
